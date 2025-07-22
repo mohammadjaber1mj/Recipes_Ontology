@@ -1,0 +1,79 @@
+QUESTIONS
+
+
+1. How many grams of chicken are needed in the Carnation Lean Fettuccine Chicken Alfredo recipe?
+
+PREFIX rec: <http://www.semanticweb.org/moham/ontologies/2024/10/recipes#>
+
+SELECT ?rec_name ?f_name ?f_quantity ?unit_name WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:has_ingredient ?food.
+  ?food a rec:poultry.
+  ?food rec:name ?f_name.
+  ?food rec:has_quantity ?f_quantity.
+  ?food rec:has_unit ?unit.
+  ?unit a rec:measurements_units.
+  ?unit rec:name ?unit_name.
+  FILTER(REGEX(?rec_name, "Fettuccine Chicken Alfredo", "i") && REGEX(?f_name, "chicken", "i"))
+}
+
+---------------------------------------------------------------------------
+2. Are there any Mexican or Italian recipes?
+
+SELECT ?rec_name ?cuis_name WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:belongs_to_cuisine ?cuisine.
+  ?cuisine a rec:cuisine.
+  ?cuisine rec:name ?cuis_name.
+  FILTER(LCASE(?cuis_name) = "mexican" || LCASE(?cuis_name) = "italian")
+} ORDER BY DESC(?cuis_name)
+
+---------------------------------------------------------------------------
+3. List number of ingredients for each recipe
+
+SELECT ?rec_name (COUNT(?ing) AS ?ings) WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:has_ingredient ?ing
+} GROUP BY (?rec_name)
+
+---------------------------------------------------------------------------
+4. How much protein is in Biryani?
+
+SELECT ?rec_name ?nutr_name ?quantity ?unit_name WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:has_nutrition ?nutrition.
+  ?nutrition a rec:protein.
+  ?nutrition rec:name ?nutr_name.
+  ?nutrition rec:has_quantity ?quantity.
+  ?nutrition rec:has_unit ?unit.
+  ?unit a rec:measurements_units.
+  ?unit rec:name ?unit_name.
+  FILTER(LCASE(?rec_name) = "biryani")
+}
+
+---------------------------------------------------------------------------
+5. How to cook Bread Pudding?
+
+SELECT ?instr WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:has_instructions ?instruction.
+  ?instruction rec:description ?instr
+  FILTER(REGEX(?rec_name, "bread pud", "i"))
+}
+
+---------------------------------------------------------------------------
+6. List of recipes for beginners
+
+SELECT ?rec_name ?skill_name WHERE {
+  ?recipe a rec:recipe.
+  ?recipe rec:name ?rec_name.
+  ?recipe rec:has_difficulty_level ?skill_level.
+  ?skill_level a rec:skill_level.
+  ?skill_level rec:name ?skill_name.
+  FILTER(LCASE(?skill_name) = "beginner")
+}
